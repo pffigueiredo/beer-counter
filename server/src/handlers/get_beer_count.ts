@@ -1,9 +1,22 @@
+import { db } from '../db';
+import { beersTable } from '../db/schema';
 import { type BeerCount } from '../schema';
+import { count } from 'drizzle-orm';
 
 export const getBeerCount = async (): Promise<BeerCount> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is counting the total number of beer entries in the database.
-    return Promise.resolve({
-        count: 0 // Placeholder count
-    } as BeerCount);
+  try {
+    // Count all beer records using drizzle's count function
+    const result = await db.select({
+      count: count()
+    })
+    .from(beersTable)
+    .execute();
+
+    return {
+      count: result[0].count
+    };
+  } catch (error) {
+    console.error('Beer count query failed:', error);
+    throw error;
+  }
 };
