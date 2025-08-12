@@ -1,13 +1,12 @@
 import { db } from '../db';
 import { beersTable } from '../db/schema';
+import { sql } from 'drizzle-orm';
 import { type BeerCount } from '../schema';
-import { count } from 'drizzle-orm';
 
 export const getBeerCount = async (): Promise<BeerCount> => {
   try {
-    // Count all beer records using drizzle's count function
     const result = await db.select({
-      count: count()
+      count: sql<number>`count(*)::int`
     })
     .from(beersTable)
     .execute();
@@ -16,7 +15,7 @@ export const getBeerCount = async (): Promise<BeerCount> => {
       count: result[0].count
     };
   } catch (error) {
-    console.error('Beer count query failed:', error);
+    console.error('Failed to get beer count:', error);
     throw error;
   }
 };
